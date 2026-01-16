@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+:root {
+  --bg-app: #fcfcfd;
+  --text-main: #0f172a;
+
+  --brand-color: #d97706;
+  /* --brand-color: #059669; */
+  /* --brand-color: #6366f1; */
+  --danger-color: #dc2626;
+}
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-brand: var(--brand-color);
+  --color-danger: var(--danger-color);
+  --color-surface: var(--bg-app);
+  --color-main: var(--text-main);
+}
+
+body {
+  background: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui;
+}
+
+.select-custom {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m19 9-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.25em;
+  padding-right: 2.5rem;
+  color: #000;
+}
