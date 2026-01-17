@@ -7,7 +7,7 @@ Code snippet manager
 
 * **Code Editing**: Integrated with the **Monaco Editor** (the engine behind VS Code) for both creation and read-only viewing.
 * **Next.js 15**: Leveraging Server Components for data fetching and Client Components for editing.
-* **Themeable Foundation**: Centralized design tokens allow you to change the entire brand identity by updating a single CSS variable.
+* **Themeable Foundation**: Centralized design tokens to change the entire brand identity by updating a single CSS variable.
 
 ---
 
@@ -20,13 +20,9 @@ Code snippet manager
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the repository
-```bash
-git clone [https://github.com/your-username/snippetbox.git](https://github.com/your-username/snippetbox.git)
-cd snippetbox
-```
 
 ### 2. Install dependencies
 ```bash
@@ -52,7 +48,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 
 ## Customization
 
-The project uses a **Design Token** system located in `app/globals.css`. To change the brand identity, simply update the `:root` variables:
+To change the brand identity, got to `app/globals.css` and simply update the `:root` variables:
 
 ```css
 :root {
