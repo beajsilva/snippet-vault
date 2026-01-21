@@ -5,7 +5,6 @@ import { Editor } from "@monaco-editor/react";
 import type { Snippet } from "@prisma/client";
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
-import SubmitButton from "./submit-button";
 
 interface SnippetFormProps {
   snippet?: Snippet;
@@ -15,7 +14,9 @@ interface SnippetFormProps {
 export default function SnippetForm({ snippet, action }: SnippetFormProps) {
   const [code, setCode] = useState(snippet?.code || "");
   const [language, setLanguage] = useState(snippet?.language || "javascript");
-  const [formState, actionDispatch] = useActionState(action, { message: "" });
+  const [formState, actionDispatch, pending] = useActionState(action, {
+    message: "",
+  });
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -39,10 +40,7 @@ export default function SnippetForm({ snippet, action }: SnippetFormProps) {
         <div className="space-y-6">
           {/* Title Input */}
           <div className="flex flex-col gap-2">
-            <label
-              className="text-sm font-semibold text-main"
-              htmlFor="title"
-            >
+            <label className="text-sm font-semibold text-main" htmlFor="title">
               Snippet Title
             </label>
             <input
@@ -123,9 +121,17 @@ export default function SnippetForm({ snippet, action }: SnippetFormProps) {
               href={snippet ? `/snippets/${snippet.id}` : "/"}
               className="flex-1 md:flex-none text-center px-5 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-main bg-surface hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
             >
-              Cancel 
+              Cancel
             </Link>
-            <SubmitButton />
+            {/* This is not necessary, pending works fine */}
+            {/* <SubmitButton /> */}
+            <button
+              type="submit"
+              disabled={pending}
+              className="bg-main text-white px-8 py-2.5 rounded-lg font-semibold text-sm hover:bg-slate-800 disabled:bg-slate-400 transition-all flex items-center gap-2"
+            >
+              {pending ? "Saving..." : "Save Snippet"}
+            </button>
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import { editSnippet } from "@/actions";
 import SnippetForm from "@/components/snippet-form";
 import { db } from "@/db";
-import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+import { notFound, redirect } from "next/navigation";
 
 interface SnippetEditPageProps {
   params: Promise<{
@@ -10,11 +11,14 @@ interface SnippetEditPageProps {
 }
 
 export default async function SnippetEditPage(props: SnippetEditPageProps) {
+   await new Promise((r) => setTimeout(r, 1000));
   const { id } = await props.params;
-  const idNum = parseInt(id);
+  
+  const { userId } = await auth();
+  if (!userId) redirect("/");
 
   const snippet = await db.snippet.findFirst({
-    where: { id: idNum },
+    where: { id, userId },
   });
 
   if (!snippet) {

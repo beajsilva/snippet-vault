@@ -8,9 +8,11 @@ datasource db {
 }
 
 model Snippet {
-  id Int @id @default(autoincrement())
+  id String  @id @default(cuid())
+  userId String
   title String
   code String
   language String
   creationDate DateTime @default(now())
+  isPublic Boolean @default(false)
 }

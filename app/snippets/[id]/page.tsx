@@ -1,6 +1,10 @@
 import { deleteSnippet } from "@/actions";
 import CodeViewer from "@/components/code-viewer";
+import CopyButton from "@/components/copy-button";
+import ShareButton from "@/components/share-button";
 import { db } from "@/db";
+import { auth } from "@clerk/nextjs/server";
+import { MoveLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -9,14 +13,31 @@ interface SnippetShowPageProps {
 }
 
 export default async function SnippetShowPage(props: SnippetShowPageProps) {
+  await new Promise((r) => setTimeout(r, 1000));
   const { id } = await props.params;
+  const { userId } = await auth();
+
   const snippet = await db.snippet.findFirst({
-    where: { id: parseInt(id) },
+    where: {
+      id,
+      OR: [
+        { isPublic: true },
+        // If userId is null, check against an empty string
+        // Since no snippet is owned by "", this check fails safely.
+        { userId: userId ?? "" },
+      ],
+    },
   });
 
   if (!snippet) {
     return notFound();
   }
+
+  if (snippet.isPublic === false && snippet.userId !== userId) {
+    return notFound();
+  }
+
+  const isOwner = snippet.userId === userId;
 
   const deleteSnippetAction = deleteSnippet.bind(null, snippet.id);
 
@@ -36,19 +57,22 @@ export default async function SnippetShowPage(props: SnippetShowPageProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <Link
-            href={`/snippets/${snippet.id}/edit`}
-            className="flex-1 md:flex-none text-center px-5 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-main bg-surface hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-          >
-            Edit
-          </Link>
-          <form action={deleteSnippetAction} className="flex-1 md:flex-none">
-            <button className="w-full px-5 py-2 border border-danger/10 rounded-lg text-sm font-semibold text-danger bg-danger/10 hover:bg-danger/20 hover:border-danger/30 transition-all shadow-sm">
-              Delete
-            </button>
-          </form>
-        </div>
+        {isOwner && (
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <ShareButton id={snippet.id} isPublic={snippet.isPublic} />
+            <Link
+              href={`/snippets/${snippet.id}/edit`}
+              className="flex-1 md:flex-none text-center px-5 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-main bg-surface hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
+            >
+              Edit
+            </Link>
+            <form action={deleteSnippetAction} className="flex-1 md:flex-none">
+              <button className="w-full px-5 py-2 border border-danger/10 rounded-lg text-sm font-semibold text-danger bg-danger/10 hover:bg-danger/20 hover:border-danger/30 transition-all shadow-sm cursor-pointer">
+                Delete
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Code View */}
@@ -57,6 +81,7 @@ export default async function SnippetShowPage(props: SnippetShowPageProps) {
           <span className="text-[10px] text-slate-500 font-mono font-bold uppercase tracking-widest select-none">
             Read only
           </span>
+          <CopyButton code={snippet.code} />
         </div>
         <CodeViewer code={snippet.code} language={snippet.language} />
       </div>
@@ -64,12 +89,13 @@ export default async function SnippetShowPage(props: SnippetShowPageProps) {
       {/* Action */}
       <div className="mt-12 text-center">
         <Link
-          href="/"
+          href="/snippets"
           className="group inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-brand transition-all"
         >
-          <span className="group-hover:-translate-x-1 transition-transform">
-            ←
-          </span>
+          <MoveLeft
+            className="group-hover:-translate-x-1 transition-transform"
+            size="16px"
+          />
           Back to Collection
         </Link>
       </div>
